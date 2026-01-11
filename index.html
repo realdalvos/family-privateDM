@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="CSS/login.css">
+<script src="JS/loginHandler.js"></script>
+</head>
+<body>
+
+<h2 class="loginTitle">Login Form</h2>
+
+<!-- Login Form -->
+<form id="loginLayout" onsubmit="return handleLogin(event)">
+  <div class="imgcontainer">
+    <img src="images/cordos.jpeg.webp" alt="Avatar" class="avatar">
+  </div>
+  <div class="credentialsContainer">
+    <div class="inputCredentials">
+        <label class="credentials" for="uname"><b>Username</b></label>
+        <input id="logger_username" type="text" placeholder="Enter Username" name="uname" required>
+        <label class="credentials" for="psw"><b>Password</b></label>
+        <div class="password-wrapper">
+            <input id="logger_password" type="password" placeholder="Enter Password" name="psw" required>
+            <span class="toggle-password" onclick="togglePassword('logger_password', this)">👁️</span>
+        </div>
+        <button type="submit">Login</button>
+        <label>
+            <input type="checkbox" id="remember_me" name="remember"> Remember me
+        </label>
+    </div>
+  </div>
+</form>
+
+<hr style="margin: 30px 0;">
+
+<!-- Registration Forms Container -->
+<div class="register-forms-container">
+  <!-- Guest Registration Form -->
+  <div class="register-section">
+    <h2 class="registerTitle">Register as Guest</h2>
+    <form id="registerGuestLayout" onsubmit="return handleRegisterGuest(event)">
+      <div class="credentialsContainer">
+        <div class="inputCredentials">
+            <label class="credentials" for="guest_uname"><b>Username</b></label>
+            <input id="register_guest_username" type="text" placeholder="Choose Username" name="guest_uname" required>
+            <label class="credentials" for="guest_psw"><b>Password</b></label>
+            <div class="password-wrapper">
+                <input id="register_guest_password" type="password" placeholder="Choose Password" name="guest_psw" required>
+                <span class="toggle-password" onclick="togglePassword('register_guest_password', this)">👁️</span>
+            </div>
+            <label class="credentials" for="guest_psw_confirm"><b>Confirm Password</b></label>
+            <div class="password-wrapper">
+                <input id="register_guest_password_confirm" type="password" placeholder="Confirm Password" name="guest_psw_confirm" required>
+                <span class="toggle-password" onclick="togglePassword('register_guest_password_confirm', this)">👁️</span>
+            </div>
+            <button type="submit">Register as Guest</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Family Registration Form -->
+  <div class="register-section">
+    <h2 class="registerTitle">Register as Family</h2>
+    <form id="registerFamilyLayout" onsubmit="return handleRegisterFamily(event)">
+      <div class="credentialsContainer">
+        <div class="inputCredentials">
+            <label class="credentials" for="family_uname"><b>Username</b></label>
+            <input id="register_family_username" type="text" placeholder="Choose Username" name="family_uname" required>
+            <label class="credentials" for="family_psw"><b>Password</b></label>
+            <div class="password-wrapper">
+                <input id="register_family_password" type="password" placeholder="Choose Password" name="family_psw" required>
+                <span class="toggle-password" onclick="togglePassword('register_family_password', this)">👁️</span>
+            </div>
+            <label class="credentials" for="family_psw_confirm"><b>Confirm Password</b></label>
+            <div class="password-wrapper">
+                <input id="register_family_password_confirm" type="password" placeholder="Confirm Password" name="family_psw_confirm" required>
+                <span class="toggle-password" onclick="togglePassword('register_family_password_confirm', this)">👁️</span>
+            </div>
+            <button type="submit">Register as Family</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<form class="footerInfo">
+    <div id="about_us">
+        <h3 class="about_us_title">About Us</h3>
+        <div>
+            <p class="about_us_phrase"> This is a private Website for communication and memories for the family Cordos.</p>
+            <p class="about_us_phrase">When you register you will have restricted access.</p> 
+        </div>
+        </p>
+    </div>
+</form>
+
+</body>
+</html>
