@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../css/home.css">
+<script src="../JS/homeHandler.js"></script>
+</head>
+<body>
+
+<div class="main-container">
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+        <button class="tab-btn active" onclick="openTab('profile')">Profile</button>
+        <button class="tab-btn" onclick="openTab('history')">History</button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Welcome Header -->
+    <div class="welcome-header">
+        <h1>Welcome, <span id="display-username"></span>! (Family)</h1>
+    </div>
+
+    <!-- Profile Tab Content -->
+    <div id="profile" class="tab-content active">
+        <h2>Profile Settings</h2>
+        <div class="profile-container">
+            <div class="avatar-section">
+                <img id="avatar-preview" src="../images/default-avatar.png" alt="Avatar" class="avatar-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22150%22 height=%22150%22%3E%3Crect fill=%22%23ddd%22 width=%22150%22 height=%22150%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2218%22 fill=%22%23999%22 text-anchor=%22middle%22 dy=%22.3em%22%3ENo Avatar%3C/text%3E%3C/svg%3E'">
+                <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="handleAvatarChange(event)">
+                <button onclick="document.getElementById('avatar-input').click()">Change Avatar</button>
+            </div>
+            <div class="profile-fields">
+                <div class="field-group">
+                    <label for="profile-username"><b>Username</b></label>
+                    <input type="text" id="profile-username" placeholder="Enter username" readonly>
+                    <button onclick="toggleEdit('username')">Edit</button>
+                </div>
+                <div class="field-group">
+                    <label for="profile-password"><b>Password</b></label>
+                    <input type="text" id="profile-password" placeholder="Enter new password" readonly>
+                    <button onclick="toggleEdit('password')">Edit</button>
+                </div>
+                <div class="field-group">
+                    <label for="profile-gender"><b>Gender</b></label>
+                    <select id="profile-gender">
+                        <option value="" disabled selected>Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                        <option value="prefer-not-to-say">Prefer not to say</option>
+                    </select>
+                </div>
+                <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Tab Content -->
+    <div id="history" class="tab-content">
+        <h2>Login History</h2>
+        <div class="history-container">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Login Date</th>
+                        <th>Login Time</th>
+                    </tr>
+                </thead>
+                <tbody id="history-list">
+                    <!-- History entries will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function logout() {
+        window.location.href = "../index.html";
+    }
+</script>
+
+</body>
+</html>
