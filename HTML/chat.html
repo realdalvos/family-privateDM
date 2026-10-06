@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../CSS/chat.css">
+<script src="../JS/chatHandler.js"></script>
+</head>
+<body>
+
+<div class="chat-page">
+    <!-- Top Bar -->
+    <div class="chat-topbar">
+        <button class="back-btn" onclick="goBack()">&larr; Back</button>
+        <h1>Chat</h1>
+        <div class="chat-actions">
+            <div class="dropdown">
+                <button class="add-friend-btn" onclick="toggleAddFriend()">+ Add Friend</button>
+                <div id="add-friend-panel" class="dropdown-panel">
+                    <input type="text" id="friend-username-input" placeholder="Enter username">
+                    <button onclick="sendFriendRequest()">Send Request</button>
+                    <p id="add-friend-message" class="panel-message"></p>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="requests-btn" onclick="toggleRequests()">
+                    Requests <span id="requests-badge" class="badge" hidden>0</span>
+                </button>
+                <div id="requests-panel" class="dropdown-panel">
+                    <div id="requests-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Body -->
+    <div class="chat-body">
+        <!-- Left: Chat list -->
+        <div class="chat-sidebar">
+            <h3>Chats</h3>
+            <div id="chat-list"></div>
+        </div>
+
+        <!-- Right: Active conversation -->
+        <div class="chat-window">
+            <div class="chat-window-header">
+                <span id="active-chat-name">Select a chat</span>
+            </div>
+            <div id="chat-messages" class="chat-messages">
+                <p class="no-chat-selected">Select a chat to start messaging.</p>
+            </div>
+            <div class="chat-input-bar">
+                <input type="text" id="chat-message-input" placeholder="Type a message..." onkeydown="handleMessageKeydown(event)" disabled>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
