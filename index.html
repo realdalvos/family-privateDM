@@ -26,6 +26,7 @@
         <button type="submit">Login</button>
         <label>
             <input type="checkbox" id="remember_me" name="remember"> Remember me
+            <span class="signup-link" onclick="toggleRegistration(true)">Sign Up</span>
         </label>
     </div>
   </div>
@@ -33,9 +34,21 @@
 
 <hr style="margin: 30px 0;">
 
+<!-- Stock Market Ticker -->
+<div id="stock-ticker-container" class="stock-ticker-container">
+    <div class="ticker-wrapper">
+        <div class="ticker-content" id="ticker-content">
+            <!-- Stock data will be populated here -->
+        </div>
+    </div>
+</div>
+
 <!-- Registration Forms Container -->
-<div class="register-forms-container">
+<div class="register-forms-container" id="register-forms-container" style="display: none;">
   <!-- Guest Registration Form -->
+  <div class="cancel-registration-view">
+    <p onclick="toggleRegistration(false)"> I already have an account - Take me Back</p>
+  </div>
   <div class="register-section">
     <h2 class="registerTitle">Register as Guest</h2>
     <form id="registerGuestLayout" onsubmit="return handleRegisterGuest(event)">

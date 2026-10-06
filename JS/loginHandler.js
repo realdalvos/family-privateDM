@@ -282,3 +282,88 @@ async function handleLogin(event) {
 
     return false;
 }
+
+// Stock Market Ticker functionality with Finnhub API
+const FINNHUB_API_KEY = 'd5toh9pr01qtjet0muvgd5toh9pr01qtjet0mv00'; // Replace with your Finnhub API key
+
+const stockSymbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'META', 'NVDA', 'NFLX'];
+let stocksData = [];
+
+async function fetchStockQuote(symbol) {
+    try {
+        const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_API_KEY}`);
+        const data = await response.json();
+
+        return {
+            symbol: symbol,
+            price: data.c, // current price
+            change: data.d, // change
+            changePercent: data.dp // percent change
+        };
+    } catch (error) {
+        console.error(`Error fetching ${symbol}:`, error);
+        return null;
+    }
+}
+
+async function fetchAllStocks() {
+    const promises = stockSymbols.map(symbol => fetchStockQuote(symbol));
+    const results = await Promise.all(promises);
+    stocksData = results.filter(stock => stock !== null);
+    updateTickerDisplay();
+}
+
+function updateTickerDisplay() {
+    const tickerContent = document.getElementById('ticker-content');
+
+    // Double the stocks array for seamless loop
+    const doubledStocks = [...stocksData, ...stocksData];
+
+    let html = '';
+    doubledStocks.forEach(stock => {
+        const changeClass = stock.change >= 0 ? 'positive' : 'negative';
+        const changeSymbol = stock.change >= 0 ? '▲' : '▼';
+
+        html += `
+            <div class="ticker-item">
+                <span class="ticker-symbol">${stock.symbol}</span>
+                <span class="ticker-price">$${stock.price.toFixed(2)}</span>
+                <span class="ticker-change ${changeClass}">
+                    ${changeSymbol} ${Math.abs(stock.changePercent).toFixed(2)}%
+                </span>
+            </div>
+        `;
+    });
+
+    tickerContent.innerHTML = html;
+}
+
+function initStockTicker() {
+    // Initial fetch
+    fetchAllStocks();
+
+    // Update every 60 seconds (Finnhub free tier allows 60 calls/minute)
+    setInterval(() => {
+        fetchAllStocks();
+    }, 60000);
+}
+
+// Toggle registration forms visibility
+function toggleRegistration(visibility) {
+    const container = document.getElementById('register-forms-container');
+
+    if (visibility) {
+        container.style.display = 'flex';
+        setTimeout(() => container.classList.add('show'), 10);
+    } else {
+        container.classList.remove('show');
+        setTimeout(() => {
+            container.style.display = 'none';
+        }, 500);
+    }
+}
+
+// Initialize stock ticker when page loads
+window.addEventListener('DOMContentLoaded', () => {
+    initStockTicker();
+});

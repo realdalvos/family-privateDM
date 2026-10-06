@@ -36,6 +36,7 @@ input[type=text], input[type=password] {
 
 .register-section {
     flex: 1;
+    margin-top: 50px;
 }
 
 .registerTitle{
@@ -96,6 +97,14 @@ button {
 }
 button:hover {
   opacity: 0.8;
+}
+.cancel-registration-view{
+    width: 100%;
+    text-align: center;
+}
+
+.cancel-registration-view:hover{
+    color: purple
 }
 
 .cancelbtn {
@@ -262,6 +271,97 @@ span.psw {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Stock Market Ticker */
+.stock-ticker-container {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    padding: 20px 0;
+    overflow: hidden;
+    margin: 30px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ticker-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.ticker-content {
+    display: flex;
+    white-space: nowrap;
+    animation: scroll-ticker 30s linear infinite;
+}
+
+.ticker-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 30px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.ticker-symbol {
+    font-weight: bold;
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+.ticker-price {
+    margin-right: 8px;
+}
+
+.ticker-change {
+    font-size: 14px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
+.ticker-change.positive {
+    background-color: #04aa23;
+    color: white;
+}
+
+.ticker-change.negative {
+    background-color: #f44336;
+    color: white;
+}
+
+@keyframes scroll-ticker {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Sign Up Link */
+.signup-link {
+    color: #2196F3;
+    cursor: pointer;
+    margin-left: 15px;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.signup-link:hover {
+    color: #1976D2;
+}
+
+/* Registration container transitions */
+.register-forms-container {
+    transition: all 0.5s ease;
+    max-height: 0;
+    overflow: hidden;
+    flex-wrap: wrap;
+}
+
+.register-forms-container.show {
+    max-height: 2000px;
 }
 
 /* Change styles for span and cancel button on extra small screens */
