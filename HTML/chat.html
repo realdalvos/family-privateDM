@@ -11,8 +11,12 @@
     <!-- Top Bar -->
     <div class="chat-topbar">
         <button class="back-btn" onclick="goBack()">&larr; Back</button>
-        <h1>Chat</h1>
-        <div class="chat-actions">
+        <h1>Social</h1>
+        <div class="section-tabs">
+            <button id="section-tab-chat" class="section-tab-btn active" onclick="switchSection('chat')">Chat</button>
+            <button id="section-tab-car" class="section-tab-btn" onclick="switchSection('car')">Car Schedule</button>
+        </div>
+        <div class="chat-actions" id="chat-actions">
             <div class="dropdown">
                 <button class="add-friend-btn" onclick="toggleAddFriend()">+ Add Friend</button>
                 <div id="add-friend-panel" class="dropdown-panel">
@@ -32,26 +36,86 @@
         </div>
     </div>
 
-    <!-- Chat Body -->
-    <div class="chat-body">
-        <!-- Left: Chat list -->
-        <div class="chat-sidebar">
-            <h3>Chats</h3>
-            <div id="chat-list"></div>
+    <!-- Chat Section -->
+    <div id="section-chat" class="social-section active">
+        <div class="chat-body">
+            <!-- Left: Chat list -->
+            <div class="chat-sidebar">
+                <h3>Chats</h3>
+                <div id="chat-list"></div>
+            </div>
+
+            <!-- Right: Active conversation -->
+            <div class="chat-window">
+                <div class="chat-window-header">
+                    <span id="active-chat-name">Select a chat</span>
+                </div>
+                <div id="chat-messages" class="chat-messages">
+                    <p class="no-chat-selected">Select a chat to start messaging.</p>
+                </div>
+                <div class="chat-input-bar">
+                    <input type="text" id="chat-message-input" placeholder="Type a message..." onkeydown="handleMessageKeydown(event)" disabled>
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Car Schedule Section -->
+    <div id="section-car" class="social-section">
+        <div class="car-schedule">
+            <div class="car-schedule-header">
+                <div class="car-tabs">
+                    <button class="car-tab-btn active" data-car="TR BMW" onclick="selectCar('TR BMW')">TR BMW</button>
+                    <button class="car-tab-btn" data-car="SC BMW" onclick="selectCar('SC BMW')">SC BMW</button>
+                </div>
+                <div class="week-nav">
+                    <button id="prev-week-btn" onclick="changeWeek(-1)">&larr; Prev</button>
+                    <span id="week-range-label"></span>
+                    <button id="next-week-btn" onclick="changeWeek(1)">Next &rarr;</button>
+                </div>
+                <button class="add-booking-btn" onclick="openBookingForm()">+ Add Booking</button>
+            </div>
+            <div class="week-grid" id="week-grid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Modal -->
+<div id="booking-modal" class="modal-overlay" hidden onclick="if (event.target === this) closeBookingForm()">
+    <div class="modal-box">
+        <h3>New Booking &mdash; <span id="booking-modal-car"></span></h3>
+
+        <label for="booking-purpose">Purpose</label>
+        <select id="booking-purpose">
+            <option>Gym</option>
+            <option>College</option>
+            <option>City</option>
+            <option>Shopping</option>
+            <option>Doctor</option>
+            <option>Other</option>
+        </select>
+
+        <label>From</label>
+        <div class="datetime-row">
+            <input type="date" id="booking-start-date">
+            <input type="time" id="booking-start-time">
         </div>
 
-        <!-- Right: Active conversation -->
-        <div class="chat-window">
-            <div class="chat-window-header">
-                <span id="active-chat-name">Select a chat</span>
-            </div>
-            <div id="chat-messages" class="chat-messages">
-                <p class="no-chat-selected">Select a chat to start messaging.</p>
-            </div>
-            <div class="chat-input-bar">
-                <input type="text" id="chat-message-input" placeholder="Type a message..." onkeydown="handleMessageKeydown(event)" disabled>
-                <button onclick="sendMessage()">Send</button>
-            </div>
+        <label>To</label>
+        <div class="datetime-row">
+            <input type="date" id="booking-end-date">
+            <input type="time" id="booking-end-time">
+        </div>
+
+        <label for="booking-location">Location</label>
+        <input type="text" id="booking-location" placeholder="Enter location">
+
+        <p id="booking-form-message" class="panel-message"></p>
+
+        <div class="modal-actions">
+            <button class="modal-save-btn" onclick="saveBooking()">Save</button>
+            <button class="modal-cancel-btn" onclick="closeBookingForm()">Cancel</button>
         </div>
     </div>
 </div>

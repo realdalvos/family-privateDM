@@ -362,6 +362,295 @@ body {
     opacity: 0.85;
 }
 
+/* Section tabs (Chat / Car Schedule) */
+.section-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.section-tab-btn {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.section-tab-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.section-tab-btn.active {
+    background-color: #04aa23;
+}
+
+.social-section {
+    display: none;
+    flex: 1;
+    min-height: 0;
+}
+
+.social-section.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Car schedule */
+.car-schedule {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.car-schedule-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.car-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.car-tab-btn {
+    background-color: #eee;
+    color: #333;
+    padding: 10px 18px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.car-tab-btn:hover {
+    background-color: #ddd;
+}
+
+.car-tab-btn.active {
+    background-color: #667eea;
+    color: white;
+}
+
+.week-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    color: #333;
+}
+
+.week-nav button {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.week-nav button:hover {
+    opacity: 0.85;
+}
+
+.week-nav button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.add-booking-btn {
+    background-color: #04aa23;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: auto;
+}
+
+.add-booking-btn:hover {
+    opacity: 0.85;
+}
+
+.week-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    overflow-y: auto;
+}
+
+.day-column {
+    background: #f7f7fb;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 120px;
+}
+
+.day-column.today {
+    outline: 2px solid #667eea;
+}
+
+.day-header {
+    font-weight: bold;
+    color: #667eea;
+    font-size: 13px;
+    text-align: center;
+}
+
+.booking-chip {
+    background: white;
+    border-left: 4px solid #667eea;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 12px;
+    color: #333;
+    position: relative;
+}
+
+.booking-chip-time {
+    font-weight: bold;
+    display: block;
+}
+
+.booking-chip-purpose {
+    display: block;
+}
+
+.booking-chip-meta {
+    display: block;
+    color: #777;
+    font-size: 11px;
+}
+
+.booking-chip-delete {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    background: none;
+    border: none;
+    color: #f44336;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0;
+}
+
+.no-bookings-msg {
+    color: #aaa;
+    font-size: 11px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Booking modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.modal-overlay[hidden] {
+    display: none;
+}
+
+.modal-box {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    max-width: 420px;
+    width: 90%;
+    color: #333;
+}
+
+.modal-box h3 {
+    margin-top: 0;
+    color: #667eea;
+}
+
+.modal-box label {
+    display: block;
+    margin: 12px 0 5px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.modal-box select,
+.modal-box input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.datetime-row {
+    display: flex;
+    gap: 8px;
+}
+
+.datetime-row input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.modal-save-btn,
+.modal-cancel-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+}
+
+.modal-save-btn {
+    background-color: #04aa23;
+}
+
+.modal-cancel-btn {
+    background-color: #ccc;
+    color: #333;
+}
+
+.modal-save-btn:hover,
+.modal-cancel-btn:hover {
+    opacity: 0.85;
+}
+
 /* Responsive */
 @media screen and (max-width: 768px) {
     .chat-body {
@@ -380,5 +669,18 @@ body {
 
     .chat-bubble {
         max-width: 80%;
+    }
+
+    .week-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .car-schedule-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .add-booking-btn {
+        margin-left: 0;
     }
 }

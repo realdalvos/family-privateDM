@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', function() {
     renderChatList();
     renderRequests();
     updateRequestsBadge();
+    renderWeekGrid();
 
     // Close dropdowns when clicking outside of them
     document.addEventListener('click', function(event) {
@@ -22,6 +23,16 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+/* ---------- Section switching (Chat / Car Schedule) ---------- */
+
+function switchSection(section) {
+    document.getElementById('section-chat').classList.toggle('active', section === 'chat');
+    document.getElementById('section-car').classList.toggle('active', section === 'car');
+    document.getElementById('section-tab-chat').classList.toggle('active', section === 'chat');
+    document.getElementById('section-tab-car').classList.toggle('active', section === 'car');
+    document.getElementById('chat-actions').hidden = section !== 'chat';
+}
 
 // Navigate back to the correct home page for this user
 function goBack() {
@@ -355,4 +366,230 @@ function handleMessageKeydown(event) {
     if (event.key === 'Enter') {
         sendMessage();
     }
+}
+
+/* ---------- Car schedule ---------- */
+
+const CARS = ['TR BMW', 'SC BMW'];
+const BOOKING_PURPOSES = ['Gym', 'College', 'City', 'Shopping', 'Doctor', 'Other'];
+const MAX_WEEK_OFFSET = 4;
+const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+let selectedCar = CARS[0];
+let weekOffset = 0;
+
+function getBookings() {
+    return JSON.parse(localStorage.getItem('carBookings') || '[]');
+}
+
+function saveBookings(bookings) {
+    localStorage.setItem('carBookings', JSON.stringify(bookings));
+}
+
+function toISODate(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+// Monday-start week containing (today + weekOffset weeks)
+function getWeekDates(offset) {
+    const today = new Date();
+    const mondayIndex = (today.getDay() + 6) % 7; // 0 = Monday
+    const monday = new Date(today);
+    monday.setHours(0, 0, 0, 0);
+    monday.setDate(today.getDate() - mondayIndex + offset * 7);
+
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        dates.push(d);
+    }
+    return dates;
+}
+
+function selectCar(car) {
+    selectedCar = car;
+    document.querySelectorAll('.car-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.car === car);
+    });
+    renderWeekGrid();
+}
+
+function changeWeek(delta) {
+    const next = weekOffset + delta;
+    if (next < -MAX_WEEK_OFFSET || next > MAX_WEEK_OFFSET) return;
+    weekOffset = next;
+    renderWeekGrid();
+}
+
+function renderWeekGrid() {
+    const dates = getWeekDates(weekOffset);
+    const todayISO = toISODate(new Date());
+
+    const label = document.getElementById('week-range-label');
+    const formatShort = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    label.textContent = `${formatShort(dates[0])} - ${formatShort(dates[6])}, ${dates[6].getFullYear()}`;
+
+    document.getElementById('prev-week-btn').disabled = weekOffset <= -MAX_WEEK_OFFSET;
+    document.getElementById('next-week-btn').disabled = weekOffset >= MAX_WEEK_OFFSET;
+
+    const bookings = getBookings().filter(b => b.car === selectedCar);
+
+    const grid = document.getElementById('week-grid');
+    grid.innerHTML = '';
+
+    dates.forEach((date, i) => {
+        const dayISO = toISODate(date);
+
+        const column = document.createElement('div');
+        column.className = 'day-column' + (dayISO === todayISO ? ' today' : '');
+
+        const header = document.createElement('div');
+        header.className = 'day-header';
+        header.textContent = `${DAY_NAMES[i]} ${date.getDate()}/${date.getMonth() + 1}`;
+        column.appendChild(header);
+
+        const dayBookings = bookings.filter(b => dayISO >= b.startDate && dayISO <= b.endDate);
+
+        if (dayBookings.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'no-bookings-msg';
+            empty.textContent = 'No bookings';
+            column.appendChild(empty);
+        } else {
+            dayBookings.forEach(booking => {
+                column.appendChild(buildBookingChip(booking, dayISO));
+            });
+        }
+
+        grid.appendChild(column);
+    });
+}
+
+function buildBookingChip(booking, dayISO) {
+    const chip = document.createElement('div');
+    chip.className = 'booking-chip';
+
+    const timeEl = document.createElement('span');
+    timeEl.className = 'booking-chip-time';
+    const isStart = dayISO === booking.startDate;
+    const isEnd = dayISO === booking.endDate;
+    if (isStart && isEnd) {
+        timeEl.textContent = `${booking.startTime}–${booking.endTime}`;
+    } else if (isStart) {
+        timeEl.textContent = `from ${booking.startTime}`;
+    } else if (isEnd) {
+        timeEl.textContent = `until ${booking.endTime}`;
+    } else {
+        timeEl.textContent = 'all day';
+    }
+    chip.appendChild(timeEl);
+
+    const purposeEl = document.createElement('span');
+    purposeEl.className = 'booking-chip-purpose';
+    purposeEl.textContent = booking.purpose;
+    chip.appendChild(purposeEl);
+
+    const metaEl = document.createElement('span');
+    metaEl.className = 'booking-chip-meta';
+    metaEl.textContent = `${booking.user} · ${booking.location}`;
+    chip.appendChild(metaEl);
+
+    if (booking.user === currentUser) {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'booking-chip-delete';
+        deleteBtn.textContent = '×';
+        deleteBtn.title = 'Delete booking';
+        deleteBtn.addEventListener('click', () => deleteBooking(booking.id));
+        chip.appendChild(deleteBtn);
+    }
+
+    return chip;
+}
+
+function deleteBooking(id) {
+    if (!confirm('Delete this booking?')) return;
+    saveBookings(getBookings().filter(b => b.id !== id));
+    renderWeekGrid();
+}
+
+function openBookingForm() {
+    document.getElementById('booking-modal-car').textContent = selectedCar;
+    document.getElementById('booking-purpose').value = BOOKING_PURPOSES[0];
+
+    const todayISO = toISODate(new Date());
+    document.getElementById('booking-start-date').value = todayISO;
+    document.getElementById('booking-end-date').value = todayISO;
+    document.getElementById('booking-start-time').value = '';
+    document.getElementById('booking-end-time').value = '';
+    document.getElementById('booking-location').value = '';
+    document.getElementById('booking-form-message').textContent = '';
+
+    document.getElementById('booking-modal').hidden = false;
+}
+
+function closeBookingForm() {
+    document.getElementById('booking-modal').hidden = true;
+}
+
+function saveBooking() {
+    const purpose = document.getElementById('booking-purpose').value;
+    const startDate = document.getElementById('booking-start-date').value;
+    const startTime = document.getElementById('booking-start-time').value;
+    const endDate = document.getElementById('booking-end-date').value;
+    const endTime = document.getElementById('booking-end-time').value;
+    const location = document.getElementById('booking-location').value.trim();
+    const msgEl = document.getElementById('booking-form-message');
+
+    msgEl.textContent = '';
+
+    if (!startDate || !startTime || !endDate || !endTime) {
+        msgEl.textContent = 'Please fill in the start and end day/time.';
+        return;
+    }
+
+    if (!location) {
+        msgEl.textContent = 'Please enter a location.';
+        return;
+    }
+
+    const start = new Date(`${startDate}T${startTime}`);
+    const end = new Date(`${endDate}T${endTime}`);
+
+    if (end <= start) {
+        msgEl.textContent = 'End must be after start.';
+        return;
+    }
+
+    const overlaps = getBookings().some(b => {
+        if (b.car !== selectedCar) return false;
+        const bStart = new Date(`${b.startDate}T${b.startTime}`);
+        const bEnd = new Date(`${b.endDate}T${b.endTime}`);
+        return start < bEnd && end > bStart;
+    });
+
+    if (overlaps) {
+        msgEl.textContent = `${selectedCar} is already booked during part of that time.`;
+        return;
+    }
+
+    const bookings = getBookings();
+    bookings.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+        car: selectedCar,
+        user: currentUser,
+        purpose: purpose,
+        startDate: startDate,
+        startTime: startTime,
+        endDate: endDate,
+        endTime: endTime,
+        location: location
+    });
+    saveBookings(bookings);
+
+    closeBookingForm();
+    renderWeekGrid();
 }
