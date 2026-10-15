@@ -34,8 +34,8 @@ function switchSection(section) {
     document.getElementById('chat-actions').hidden = section !== 'chat';
 }
 
-// Navigate back to the correct home page for this user
-function goBack() {
+// Figure out which home page this user belongs to
+function getHomePageUrl() {
     let userType = sessionStorage.getItem('currentUserType');
 
     if (!userType) {
@@ -50,7 +50,12 @@ function goBack() {
         }
     }
 
-    window.location.href = userType === 'family' ? 'homeFamily.html' : 'homeGuest.html';
+    return userType === 'family' ? 'homeFamily.html' : 'homeGuest.html';
+}
+
+// Navigate to Profile/History on the home page
+function goToHome(tab) {
+    window.location.href = `${getHomePageUrl()}?tab=${tab}`;
 }
 
 /* ---------- Storage helpers ---------- */
@@ -370,7 +375,7 @@ function handleMessageKeydown(event) {
 
 /* ---------- Car schedule ---------- */
 
-const CARS = ['TR BMW', 'SC BMW'];
+const CARS = ['SC BMW', 'TR BMW'];
 const BOOKING_PURPOSES = ['Gym', 'College', 'City', 'Shopping', 'Doctor', 'Other'];
 const MAX_WEEK_OFFSET = 4;
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -472,6 +477,7 @@ function renderWeekGrid() {
 function buildBookingChip(booking, dayISO) {
     const chip = document.createElement('div');
     chip.className = 'booking-chip';
+    chip.addEventListener('click', () => showBookingDetails(booking));
 
     const timeEl = document.createElement('span');
     timeEl.className = 'booking-chip-time';
@@ -495,7 +501,7 @@ function buildBookingChip(booking, dayISO) {
 
     const metaEl = document.createElement('span');
     metaEl.className = 'booking-chip-meta';
-    metaEl.textContent = `${booking.user} · ${booking.location}`;
+    metaEl.textContent = booking.user;
     chip.appendChild(metaEl);
 
     if (booking.user === currentUser) {
@@ -503,7 +509,10 @@ function buildBookingChip(booking, dayISO) {
         deleteBtn.className = 'booking-chip-delete';
         deleteBtn.textContent = '×';
         deleteBtn.title = 'Delete booking';
-        deleteBtn.addEventListener('click', () => deleteBooking(booking.id));
+        deleteBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            deleteBooking(booking.id);
+        });
         chip.appendChild(deleteBtn);
     }
 
@@ -516,6 +525,23 @@ function deleteBooking(id) {
     renderWeekGrid();
 }
 
+function showBookingDetails(booking) {
+    document.getElementById('details-car').textContent = booking.car;
+    document.getElementById('details-purpose').textContent = booking.purpose;
+    document.getElementById('details-user').textContent = booking.user;
+    document.getElementById('details-from').textContent = `${booking.startDate} ${booking.startTime}`;
+    document.getElementById('details-to').textContent = `${booking.endDate} ${booking.endTime}`;
+    document.getElementById('details-location-leaving').textContent = booking.locationLeaving || booking.location || '—';
+    document.getElementById('details-location-at').textContent = booking.locationAt || '—';
+    document.getElementById('details-location-returning').textContent = booking.locationReturning || booking.location || '—';
+
+    document.getElementById('booking-details-modal').hidden = false;
+}
+
+function closeBookingDetails() {
+    document.getElementById('booking-details-modal').hidden = true;
+}
+
 function openBookingForm() {
     document.getElementById('booking-modal-car').textContent = selectedCar;
     document.getElementById('booking-purpose').value = BOOKING_PURPOSES[0];
@@ -525,8 +551,13 @@ function openBookingForm() {
     document.getElementById('booking-end-date').value = todayISO;
     document.getElementById('booking-start-time').value = '';
     document.getElementById('booking-end-time').value = '';
-    document.getElementById('booking-location').value = '';
+    document.getElementById('booking-location-leaving').value = '';
+    document.getElementById('booking-location-at').value = '';
+    document.getElementById('booking-location-returning').value = '';
     document.getElementById('booking-form-message').textContent = '';
+    document.getElementById('booking-purpose-other-label').style.display = 'none';
+    document.getElementById('booking-purpose-other-input').style.display = 'none';
+    document.getElementById('booking-purpose-other-input').value = '';
 
     document.getElementById('booking-modal').hidden = false;
 }
@@ -535,24 +566,46 @@ function closeBookingForm() {
     document.getElementById('booking-modal').hidden = true;
 }
 
+function handlePurposeChange(){
+    let purpose = document.getElementById('booking-purpose').value; 
+    if(purpose === 'Other'){
+        document.getElementById('booking-purpose-other-label').style.display = 'block';
+        document.getElementById('booking-purpose-other-input').style.display = 'block';
+    } else {
+        document.getElementById('booking-purpose-other-label').style.display = 'none';
+        document.getElementById('booking-purpose-other-input').style.display = 'none';
+    }
+}
+
 function saveBooking() {
-    const purpose = document.getElementById('booking-purpose').value;
+    let purpose = document.getElementById('booking-purpose').value;
     const startDate = document.getElementById('booking-start-date').value;
     const startTime = document.getElementById('booking-start-time').value;
     const endDate = document.getElementById('booking-end-date').value;
     const endTime = document.getElementById('booking-end-time').value;
-    const location = document.getElementById('booking-location').value.trim();
+    const locationLeaving = document.getElementById('booking-location-leaving').value.trim();
+    const locationAt = document.getElementById('booking-location-at').value.trim();
+    const locationReturning = document.getElementById('booking-location-returning').value.trim();
     const msgEl = document.getElementById('booking-form-message');
 
     msgEl.textContent = '';
+
+    if (purpose === 'Other') {
+        const otherPurpose = document.getElementById('booking-purpose-other-input').value.trim();
+        if (!otherPurpose) {
+            msgEl.textContent = 'Please specify the purpose.';
+            return;
+        }
+        purpose = otherPurpose;
+    }
 
     if (!startDate || !startTime || !endDate || !endTime) {
         msgEl.textContent = 'Please fill in the start and end day/time.';
         return;
     }
 
-    if (!location) {
-        msgEl.textContent = 'Please enter a location.';
+    if (!locationLeaving || !locationAt || !locationReturning) {
+        msgEl.textContent = 'Please enter the leaving, current, and returning location.';
         return;
     }
 
@@ -586,7 +639,9 @@ function saveBooking() {
         startTime: startTime,
         endDate: endDate,
         endTime: endTime,
-        location: location
+        locationLeaving: locationLeaving,
+        locationAt: locationAt,
+        locationReturning: locationReturning
     });
     saveBookings(bookings);
 
