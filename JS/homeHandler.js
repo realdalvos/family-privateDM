@@ -24,6 +24,11 @@ window.addEventListener('DOMContentLoaded', function() {
     // Load login history
     loadHistory();
 
+    // Open a specific tab if requested via URL (e.g. coming back from the Social page)
+    const requestedTab = new URLSearchParams(window.location.search).get('tab');
+    if (requestedTab && document.getElementById(requestedTab)) {
+        openTab(requestedTab);
+    }
 });
 
 // Tab switching functionality
@@ -43,8 +48,11 @@ function openTab(tabName) {
     // Show the selected tab
     document.getElementById(tabName).classList.add('active');
 
-    // Add active class to the clicked button
-    event.target.classList.add('active');
+    // Add active class to the matching tab button
+    const tabButton = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+    if (tabButton) {
+        tabButton.classList.add('active');
+    }
 }
 
 // Load user profile from localStorage
